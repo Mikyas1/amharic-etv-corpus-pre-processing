@@ -1,0 +1,45 @@
+...
+Ex.
+ጤና ይስጥልኝ ኢትዮጵያ ... ሰኔ 05/2016 ዓ.ም, የዕለቱ 
+
+፡ -  
+፦
+:-
+፡-
+ - 
+Ex.
+<Am-sen>፦ የቱሪዝም ማሰልጠኛ ኢንስቲትዩት
+<Am-sen> - አዲስ አበባ ፖሊስ
+
+።
+Ex.
+<Am-sen>።
+
+
+#Etv
+Ex.
+#Etv <Am-sen>
+
+
+--- to remove
+የዕለቱ የውጭ ምንዛሬ ዋጋ
+ጤና ይስጥልኝ ኢትዮጵያ ...
+
+
+--- to remove 
+1.
+2.
+3.
+...
+<number>.
+
+--- rem sentence if it contain
+----------------- (-*<more than 2>)
+Ex.
+ጌትነት ዋለ-----------------------------AM-4
+<solution> to remove this kind of spacers in the corpus if a word is greater than long Amharic words 
+- drop the sentence
+
+--- remove emojis 
+Ex.
+📷
