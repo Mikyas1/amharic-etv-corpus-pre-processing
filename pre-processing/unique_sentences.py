@@ -22,18 +22,25 @@ def hash_sentence(sentence):
 
 def sentence_is_duplicate(sentence):
     global unique_sentences
-    return unique_sentences.get(hash_sentence(sentence=sentence), None)
-        
+    try:
+        hashed = hash_sentence(sentence=sentence)
+        return unique_sentences.get(hashed, None)
+    except Exception as e:
+        return False
 
 
 def unique_sentence_wrapper(sentence):
     global unique_sentences
     existent_sentence = sentence_is_duplicate(sentence=sentence)
     if existent_sentence:
+        # print(sentence)
         return None
-    sentence_hash = hash_sentence(sentence=sentence)
-    unique_sentences[sentence_hash] = sentence
-    return sentence
+    try:
+        sentence_hash = hash_sentence(sentence=sentence)
+        unique_sentences[sentence_hash] = sentence
+        return sentence
+    except Exception as e:
+        return None
 
 
 

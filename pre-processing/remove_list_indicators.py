@@ -3,8 +3,18 @@ from utils.helpers import *
 
 def remove_list_indicators(text):
     # Pattern to match ordered and unordered list indicators
-    pattern = r'^\s*(?:\d+\.\s*|•\s*)'
+    pattern = r'^\s*(?:\d+\-\s*|•\s*)'
+    # pattern = r'^(?:\(\d+\)\s*|-)\s*'
     cleaned_text = re.sub(pattern, '', text)
+    return cleaned_text.strip()
+
+def remove_numbered_braces(text):
+    # Pattern to match braces containing numbers and punctuation
+    # pattern = r'\([^)]*\)'
+    pattern = r'\([^)]*\d[^)]*\)'
+    # Replace the pattern with an empty string
+    cleaned_text = re.sub(pattern, '', text)
+    
     return cleaned_text.strip()
 
 
@@ -17,7 +27,7 @@ def main():
     def remove_list_indicators_from_sentences():
         write_lines_to_file(transformer(read_file_and_yield_line(
                                             args.input_file), 
-                                            remove_list_indicators
+                                            remove_numbered_braces
                                         ), 
                             args.output_file)
 
