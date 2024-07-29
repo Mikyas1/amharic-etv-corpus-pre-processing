@@ -70,29 +70,36 @@ def process_amharic_sentence(input):
             if random.random() < 0.5:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result + last_punctuation} ---->>> updated ---->>> {input} ---->>> index {i} with {i + 1}"
+                # return f"{result + last_punctuation} ---->>> updated ---->>> {input} ---->>> index {i} with {i + 1}"
+                return [f"{result + last_punctuation}", input, "wo", "t", i, i+1, current_word, num_words]
 
         elif current_pos == "V" and next_pos == "V":
             if random.random() < 0.5:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
+                # return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
+                return [f"{result + last_punctuation}", input, "wo", "t", i, i+1, current_word, num_words]
 
         else:
             if random.random() < 0.1:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
+                # return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
+                return [f"{result + last_punctuation}", input, "wo", "t", i, i+1, current_word, num_words]
 
-    return input + " ---->>> No-updated  ---->>> ?????"
+    # return input + " ---->>> No-updated  ---->>> ?????"
+    return [input, input, "wo", "f", "", "", "", ""]
+
 
 def main():
     args = arg_parser(description="""Wordorder error generation""", 
                               input_dict=standard_input_output_args,)
     
+    
+    headers = ['incorrect', 'correct', 'error_type', 'error_exists', 'first_index', 'second_index', 'first_word', 'second_word']
     @with_info
     def wordorder_error_generation():
-        write_lines_to_file(transformer(read_file_and_yield_line(args.input_file), process_amharic_sentence), args.output_file) 
+        write_lines_to_csv_file(headers=headers)(transformer(read_file_and_yield_line(args.input_file), process_amharic_sentence), args.output_file) 
  
 if __name__ == "__main__":
     main()

@@ -1,4 +1,4 @@
-import threading
+import multiprocessing
 from utils.helpers import *
 
 import random
@@ -75,19 +75,19 @@ def process_amharic_sentence(amharic_input_sentence):
     return amharic_input_sentence + " ---->>> No-updated  ---->>> ?????"
 
 
-
-write_lock = threading.Lock()
-
-def read_lines(file_name, output_file, start_line, threads):
-    global write_lock
+def read_lines(file_name, output_file, start_line, threads, write_lock):
     with open(output_file, 'a') as outfile:        
   
       i = 1
       for line in read_file_and_yield_line(file_name):
           if ((i - start_line) % threads) == 0:
-              with write_lock:
+                #   with write_lock:
                   # print(line, i, start_line)
-                  outfile.write(f'{process_amharic_sentence(line)}\n')
+                write_lock.acquire()
+                try:
+                    outfile.write(f'{process_amharic_sentence(line)}\n')
+                finally:
+                    write_lock.release()
           i += 1
     
 
@@ -102,40 +102,28 @@ def main():
     file_name = args.input_file
     output_file = args.output_file
     
-    # Create three threads for reading lines with different starting points
-    thread1 = threading.Thread(target=read_lines, args=(file_name, output_file, 1, 6))
-    thread2 = threading.Thread(target=read_lines, args=(file_name, output_file, 2, 6))
-    thread3 = threading.Thread(target=read_lines, args=(file_name, output_file, 3, 6))
-    thread4 = threading.Thread(target=read_lines, args=(file_name, output_file, 4, 6))
-    thread5 = threading.Thread(target=read_lines, args=(file_name, output_file, 5, 6))
-    thread6 = threading.Thread(target=read_lines, args=(file_name, output_file, 6, 6))
+    lock = multiprocessing.Lock()
+    
+    # Create three process for reading lines with different starting points
+    process1 = multiprocessing.Process(target=read_lines, args=(file_name, output_file, 1, 4, lock))
+    process2 = multiprocessing.Process(target=read_lines, args=(file_name, output_file, 2, 4, lock))
+    process3 = multiprocessing.Process(target=read_lines, args=(file_name, output_file, 3, 4, lock))
+    process4 = multiprocessing.Process(target=read_lines, args=(file_name, output_file, 4, 4, lock))
 
     # Start the threads
-    thread1.start()
-    thread2.start()
-    thread3.start()
-    thread4.start()
-    thread5.start()
-    thread6.start()
+    process1.start()
+    process2.start()
+    process3.start()
+    process4.start()
+    # process5.start()
+    # process6.start()
 
-    # Wait for all threads to complete
-    thread1.join()
-    thread2.join()
-    # thread3.join()
-    
-    
+    # Wait for all processs to complete
+    process1.join()
+    process2.join()
+    process3.join()
+    process4.join()
+
+
 if __name__ == "__main__":
     main()
-def remove_last_punctuation(sentence):
-    # Define the punctuation marks you want to remove
-    punctuation_marks = {'?', '።', '!'}
-    
-    # Check if the last character is a punctuation mark
-    if sentence and sentence[-1] in punctuation_marks:
-        return sentence[:-1], sentence[-1]
-    return sentence, ""
-
-# Example usage
-input_sentence = "ሩዝን በ5 ዞኖች? ለማልማት እየሠራን ነው።"
-output_sentence = remove_last_punctuation(input_sentence)
-print(output_sentence)  # Output: ሩዝን በ5 ዞኖች? ለማልማት እየሠራን ነው

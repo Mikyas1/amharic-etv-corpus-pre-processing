@@ -1,6 +1,7 @@
 import argparse
 import types
 import time
+import csv
 
 def convert_to_int(string):
     try:
@@ -36,6 +37,18 @@ def write_lines_to_file(lines, output_file_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
+def write_lines_to_csv_file(headers):
+    def inner(lines, output_file_path):
+        with open(output_file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            
+            writer.writerow(headers)
+            
+            for line in lines:
+                writer.writerow(line)
+    return inner
+    
 
 def transformer(lines, transformer_func, progress_report=False):
     for i, line in enumerate(lines, start=1):
