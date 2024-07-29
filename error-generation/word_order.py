@@ -4,6 +4,19 @@ from utils.helpers import *
 import string
 import hm
 
+import csv
+
+# load language
+# hm.download('a')
+
+def remove_last_punctuation(sentence):
+    # Define the punctuation marks you want to remove
+    punctuation_marks = {'?', '።', '!'}
+    
+    # Check if the last character is a punctuation mark
+    if sentence and sentence[-1] in punctuation_marks:
+        return sentence[:-1], sentence[-1]
+    return sentence, ""
 
 def remove_punctuation_from_words_amh(text):
     # Regular expression pattern to match words and attached punctuation
@@ -41,8 +54,9 @@ def swap_words(sentence, index1, index2):
     # Helper function to swap two words in a list
     sentence[index1], sentence[index2] = sentence[index2], sentence[index1]
 
-def process_amharic_sentence(amharic_input_sentence):
+def process_amharic_sentence(input):
     print("done on line")
+    amharic_input_sentence, last_punctuation = remove_last_punctuation(input)
     words = amharic_input_sentence.split()
     num_words = len(words)
     
@@ -56,21 +70,21 @@ def process_amharic_sentence(amharic_input_sentence):
             if random.random() < 0.5:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result} ---->>> updated ---->>> {amharic_input_sentence}"
+                return f"{result + last_punctuation} ---->>> updated ---->>> {input} ---->>> index {i} with {i + 1}"
 
         elif current_pos == "V" and next_pos == "V":
             if random.random() < 0.5:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result} ---->>> updated  ---->>> {amharic_input_sentence}"
+                return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
 
         else:
             if random.random() < 0.1:
                 swap_words(words, i, i + 1)
                 result = ' '.join(words)
-                return f"{result} ---->>> updated  ---->>> {amharic_input_sentence}"
+                return f"{result + last_punctuation} ---->>> updated  ---->>> {input} ---->>> index {i} with {i + 1}"
 
-    return amharic_input_sentence + " ---->>> No-updated  ---->>> ?????"
+    return input + " ---->>> No-updated  ---->>> ?????"
 
 def main():
     args = arg_parser(description="""Wordorder error generation""", 
