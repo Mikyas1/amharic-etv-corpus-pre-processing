@@ -92,14 +92,15 @@ def process_amharic_sentence(input):
 
 
 def main():
-    args = arg_parser(description="""Wordorder error generation""", 
-                              input_dict=standard_input_output_args,)
+    args = arg_parser(description="""Wordorder error generation, 
+                                    optional off_set starts reading from file starting the provided line""", 
+                              input_dict=input_output_with_offset_args,)
     
     
     headers = ['incorrect', 'correct', 'error_type', 'error_exists', 'first_index', 'second_index', 'first_word', 'second_word']
     @with_info
     def wordorder_error_generation():
-        write_lines_to_csv_file(headers=headers)(transformer(read_file_and_yield_line(args.input_file), process_amharic_sentence), args.output_file) 
+        write_lines_to_csv_file(headers=headers)(transformer(read_file_and_yield_line_with_offset(args.off_set)(args.input_file), process_amharic_sentence), args.output_file) 
  
 if __name__ == "__main__":
     main()

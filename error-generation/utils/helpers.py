@@ -2,6 +2,7 @@ import argparse
 import types
 import time
 import csv
+import os
 
 def convert_to_int(string):
     try:
@@ -20,6 +21,22 @@ def read_file_and_yield_line(file_path):
         print(f"The file at {file_path} was not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def read_file_and_yield_line_with_offset(off_set):
+
+    def read_file_and_yield_line(file_path):
+        try:
+            with open(file_path, 'r') as file:
+                for i, line in enumerate(file):
+                    if i >= off_set:
+                        yield line.strip()
+                        print(f"done line {i}")
+        except FileNotFoundError:
+            print(f"The file at {file_path} was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    return read_file_and_yield_line
 
 
 def write_lines_to_file(lines, output_file_path):
@@ -40,13 +57,22 @@ def write_lines_to_file(lines, output_file_path):
 
 def write_lines_to_csv_file(headers):
     def inner(lines, output_file_path):
-        with open(output_file_path, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            
-            writer.writerow(headers)
-            
-            for line in lines:
-                writer.writerow(line)
+        file_exists = os.path.isfile(output_file_path)
+
+        try:
+            with open(output_file_path, mode='a', newline='') as file:
+                writer = csv.writer(file)
+
+                if not file_exists and headers:
+                    writer.writerow(headers)
+
+                for line in lines:
+                    if line is not None:
+                        writer.writerow(line)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
     return inner
     
 
@@ -72,7 +98,8 @@ def arg_parser(description, input_dict):
     
     for key in input_dict:
         flag = key if input_dict[key].get('required', False) else f"--{key}"
-        parser.add_argument(flag, type=input_dict[key].get('type', str), help=input_dict[key].get('help', ""))
+        parser.add_argument(flag, type=input_dict[key].get('type', str), help=input_dict[key].get('help', ""),
+                            default=input_dict[key].get('default', None))
             
     return parser.parse_args()
     
@@ -91,6 +118,17 @@ standard_input_output_args = {
         "required": True,
         "type": str,
         "help": "The path to the output file"
+    },
+}
+
+input_output_with_offset_args = {
+    "input_file": standard_input_args.get("input_file", None),
+    "output_file": standard_input_output_args.get("output_file", None),
+    "off_set": {
+        "required": False,
+        "type": int,
+        "help": "Offset value, or starting line of the input file",
+        "default": 0
     },
 }
 
