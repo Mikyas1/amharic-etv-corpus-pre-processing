@@ -76,6 +76,17 @@ def write_lines_to_csv_file(headers):
     return inner
     
 
+def read_lines_from_csv_file(file_path):
+    try:
+        with open(file_path, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                yield row
+    except Exception as e:
+        print(f"Failed loading pos dict from file: {e}")
+        raise(e)
+    
+
 def transformer(lines, transformer_func, progress_report=False):
     for i, line in enumerate(lines, start=1):
         if progress_report:
@@ -130,6 +141,17 @@ input_output_with_offset_args = {
         "help": "Offset value, or starting line of the input file",
         "default": 0
     },
+}
+
+input_output__offset_pos_args = {
+    "input_file": standard_input_args.get("input_file", None),
+    "output_file": standard_input_output_args.get("output_file", None),
+    "pos_file": {
+        "required": True,
+        "type": str,
+        "help": "The path to the pos cache file"
+    },
+    "off_set": input_output_with_offset_args.get("off_set", None),
 }
 
 def with_info(func):
